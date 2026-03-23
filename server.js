@@ -14,7 +14,8 @@ app.get('/pair', async (req, res) => {
             auth: state,
             printQRInTerminal: false,
             logger: pino({ level: "silent" })
-        });
+       
+ sock.ev.on('creds.update', saveCreds);
 
         if (!sock.authState.creds.registered) {
             await delay(1500);

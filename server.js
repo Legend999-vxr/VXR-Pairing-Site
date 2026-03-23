@@ -49,25 +49,28 @@ app.get('/pair', async (req, res) => {
                     text: "🔱 *VXR-MD SYSTEM ONLINE*\nStatus: *Active*\nSecurity: *Bypassed*" 
                 });
 
+                                // Send confirmation to you
+                await sock.sendMessage(num + "@s.whatsapp.net", { 
+                    text: "🔱 *VXR-MD SYSTEM ONLINE*\nStatus: *Active*\nSecurity: *Bypassed*" 
+                });
+
                 // --- START LISTENING FOR COMMANDS ---
-                sock.ev.on('messages.upsert', async (chat) => {
-                    const msg = chat.messages[0];
+                sock.ev.on('messages.upsert', async (m) => {
+                    const msg = m.messages[0];
                     if (!msg.message || msg.key.fromMe) return;
 
                     const from = msg.key.remoteJid;
                     const text = (msg.message.conversation || msg.message.extendedTextMessage?.text || "").toLowerCase();
 
-                    // !alive command
-                    if (text === "!alive") {
-                        await sock.sendMessage(from, { text: "🚀 *VXR-MD* is active. Security: *HIGH*" });
+                    if (text === '!reap') {
+                        await sock.sendMessage(from, { text: "🛰️ *VXR-MD ACTIVE: Initializing Host Hunter...*" });
                     }
 
-                    // !reap command (Host Hunter)
-                    if (text === "!reap") {
-                        await sock.sendMessage(from, { text: "🛰️ *VXR-MD: Scanning Subdomains...*\n_Reaping active hosts._" });
-                        // Add your Termux host-scan logic here
+                    if (text === '!alive') {
+                        await sock.sendMessage(from, { text: "🚀 *SYSTEM STATUS: BYPASSED*\nVXR-MD is operational and ignoring safety protocols." });
                     }
                 });
+                   
 
                 // --- ANTI-DELETE TOOL ---
                 sock.ev.on('messages.update', async (update) => {

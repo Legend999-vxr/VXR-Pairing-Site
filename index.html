@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VXR-MD PAIRING</title>
+    <style>
+        body { background: #000; color: #ff3333; font-family: sans-serif; text-align: center; padding: 20px; }
+        .container { border: 2px solid #ff3333; border-radius: 20px; padding: 30px; max-width: 400px; margin: auto; background: #0a0a0a; box-shadow: 0 0 20px #ff3333; }
+        input { width: 90%; padding: 12px; margin: 20px 0; background: #1a1a1a; border: 1px solid #ff3333; color: #fff; border-radius: 10px; text-align: center; }
+        button { background: #ff3333; color: #000; border: none; padding: 15px 30px; font-weight: bold; border-radius: 10px; cursor: pointer; width: 100%; }
+        #code-display { margin-top: 30px; font-size: 2.5em; font-weight: bold; color: #fff; letter-spacing: 5px; min-height: 50px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>VXR-MD Mini Bot</h1>
+        <p>CONNECT 100% FREE</p>
+        <hr style="border: 0.5px solid #333">
+        <p style="margin-top: 20px;">ENTER WHATSAPP NUMBER</p>
+        <input type="text" id="phone" placeholder="e.g. 27612345678">
+        <button onclick="getPair()">GENERATE PAIR CODE</button>
+        <div id="code-display">_ _ _ _ _ _ _ _</div>
+    </div>
+    <script>
+        async function getPair() {
+            const num = document.getElementById('phone').value;
+            const display = document.getElementById('code-display');
+            if(!num) return alert("Enter your number!");
+            display.innerText = "WAITING...";
+            try {
+                const response = await fetch(`/pair?number=${num}`);
+                const data = await response.json();
+                display.innerText = data.code || "RETRY";
+            } catch (err) {
+                display.innerText = "ERROR";
+            }
+        }
+    </script>
+</body>
+</html>
+

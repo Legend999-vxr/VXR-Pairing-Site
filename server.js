@@ -38,41 +38,46 @@ app.get('/pair', async (req, res) => {
         // 3. Handle Credential Updates
         sock.ev.on('creds.update', saveCreds);
 
-        // 4. Connection Status Logic
+                // 4. Connection Status & Command Handling
         sock.ev.on('connection.update', async (update) => {
             const { connection } = update;
             if (connection === 'open') {
                 console.log(`[SUCCESS] ${num} Linked!`);
                 
-                // OPTIONAL: Send a confirmation message to the user
+                // Send confirmation to you
                 await sock.sendMessage(num + "@s.whatsapp.net", { 
-                    text: "🚀 *VXR-MD LINKED SUCCESSFULLY*\nYour pairing terminal is active." 
+                    text: "🔱 *VXR-MD SYSTEM ONLINE*\nStatus: *Active*\nSecurity: *Bypassed*" 
+                });
+
+                // --- START LISTENING FOR COMMANDS ---
+                sock.ev.on('messages.upsert', async (chat) => {
+                    const msg = chat.messages[0];
+                    if (!msg.message || msg.key.fromMe) return;
+
+                    const from = msg.key.remoteJid;
+                    const text = (msg.message.conversation || msg.message.extendedTextMessage?.text || "").toLowerCase();
+
+                    // !alive command
+                    if (text === "!alive") {
+                        await sock.sendMessage(from, { text: "🚀 *VXR-MD* is active. Security: *HIGH*" });
+                    }
+
+                    // !reap command (Host Hunter)
+                    if (text === "!reap") {
+                        await sock.sendMessage(from, { text: "🛰️ *VXR-MD: Scanning Subdomains...*\n_Reaping active hosts._" });
+                        // Add your Termux host-scan logic here
+                    }
+                });
+
+                // --- ANTI-DELETE TOOL ---
+                sock.ev.on('messages.update', async (update) => {
+                    for (const { key, update: messageUpdate } of update) {
+                        if (messageUpdate.revoked) {
+                            console.log("Deleted message detected from:", key.remoteJid);
+                            // You can add logic here to forward the deleted content to your number
+                        }
+                    }
                 });
             }
         });
-
-        // 5. Request the Pairing Code
-        if (!sock.authState.creds.registered) {
-            await delay(1500); // Small delay to let the engine warm up
-            const code = await sock.requestPairingCode(num);
-            res.json({ code: code });
-        } else {
-            res.json({ code: "ALREADY_CONNECTED" });
-        }
-
-    } catch (err) {
-        console.error(err);
-        res.status(500).json({ error: "Pairing Failed" });
-    }
-});
-
-app.listen(PORT, () => {
-    console.log(`
-    ====================================
-    VXR ENTERPRISE SERVER LIVE
-    PORT: ${PORT}
-    STATUS: SECURE (MacOS ID)
-    ====================================
-    `);
-});
-    
+        

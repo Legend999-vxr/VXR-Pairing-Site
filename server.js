@@ -7,7 +7,6 @@ const {
     fetchLatestBaileysVersion 
 } = require("@whiskeysockets/baileys");
 const pino = require('pino');
-const fs = require('fs');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -27,7 +26,7 @@ app.get('/pair', async (req, res) => {
             version: version,
             printQRInTerminal: false,
             logger: pino({ level: "silent" }),
-            browser: Browsers.macOS("Desktop"),
+            browser: Browsers.macOS("Desktop"), // Bypasses linking errors
             syncFullHistory: false
         });
 
@@ -38,22 +37,38 @@ app.get('/pair', async (req, res) => {
             if (connection === 'open') {
                 console.log(`[SUCCESS] ${num} Linked!`);
                 
+                // Initial Online Message
                 await sock.sendMessage(num + "@s.whatsapp.net", { 
                     text: "🔱 *VXR-MD SYSTEM ONLINE*\nStatus: *Active*\nSecurity: *Bypassed*" 
                 });
 
-                // COMMAND LISTENER
-                sock.ev.on('messages.upsert', async (m) => {
-                    const msg = m.messages[0];
+                // --- COMMAND LISTENER ---
+                sock.ev.on('messages.upsert', async (chat) => {
+                    const msg = chat.messages[0];
                     if (!msg.message || msg.key.fromMe) return;
+
                     const from = msg.key.remoteJid;
                     const text = (msg.message.conversation || msg.message.extendedTextMessage?.text || "").toLowerCase();
 
-                    if (text === '!reap') {
-                        await sock.sendMessage(from, { text: "🛰️ *VXR-MD ACTIVE: Initializing Host Hunter...*" });
+                    // Command: !alive
+                    if (text === "!alive") {
+                        await sock.sendMessage(from, { text: "🚀 *SYSTEM STATUS: BYPASSED*\nVXR-MD is operational and active." });
                     }
-                    if (text === '!alive') {
-                        await sock.sendMessage(from, { text: "🚀 *SYSTEM STATUS: BYPASSED*\nVXR-MD is operational." });
+
+                    // Command: !reap (Host Hunter)
+                    if (text === "!reap") {
+                        await sock.sendMessage(from, { text: "🛰️ *VXR-MD: Scanning Subdomains...*\n_Reaping active hosts for VPN configs._" });
+                    }
+                });
+
+                // --- ANTI-DELETE TOOL ---
+                sock.ev.on('messages.update', async (update) => {
+                    for (const { key, update: messageUpdate } of update) {
+                        if (messageUpdate.revoked) {
+                            await sock.sendMessage(num + "@s.whatsapp.net", { 
+                                text: `⚠️ *DETECTION:* A message was deleted in ${key.remoteJid}` 
+                            });
+                        }
                     }
                 });
             }
@@ -75,4 +90,3 @@ app.get('/pair', async (req, res) => {
 app.listen(PORT, () => {
     console.log(`VXR SERVER LIVE ON PORT ${PORT}`);
 });
-    

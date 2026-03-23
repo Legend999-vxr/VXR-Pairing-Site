@@ -3,40 +3,148 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>VXR-MD PAIRING</title>
+    <title>VXR-MD Enterprise | Pairing Service</title>
     <style>
-        body { background: #000; color: #ff3333; font-family: sans-serif; text-align: center; padding: 20px; }
-        .container { border: 2px solid #ff3333; border-radius: 20px; padding: 30px; max-width: 400px; margin: auto; background: #0a0a0a; box-shadow: 0 0 20px #ff3333; }
-        input { width: 90%; padding: 12px; margin: 20px 0; background: #1a1a1a; border: 1px solid #ff3333; color: #fff; border-radius: 10px; text-align: center; }
-        button { background: #ff3333; color: #000; border: none; padding: 15px 30px; font-weight: bold; border-radius: 10px; cursor: pointer; width: 100%; }
-        #code-display { margin-top: 30px; font-size: 2.5em; font-weight: bold; color: #fff; letter-spacing: 5px; min-height: 50px; }
+        /* Corporate Color Palette & Reset */
+        :root {
+            --primary: #2563eb; /* Professional Blue */
+            --bg: #f8fafc;
+            --card-bg: #ffffff;
+            --text-main: #1e293b;
+            --text-muted: #64748b;
+            --border: #e2e8f0;
+        }
+
+        body { 
+            background: var(--bg); 
+            color: var(--text-main); 
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; 
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .container { 
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 40px;
+            max-width: 450px;
+            width: 100%;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+
+        h1 { 
+            font-size: 1.5rem; 
+            font-weight: 700; 
+            margin-bottom: 8px;
+            color: var(--primary);
+        }
+
+        p { 
+            font-size: 0.9rem; 
+            color: var(--text-muted); 
+            margin-bottom: 24px;
+        }
+
+        label {
+            display: block;
+            text-align: left;
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: var(--text-main);
+        }
+
+        input { 
+            width: 100%; 
+            padding: 12px; 
+            margin-bottom: 20px; 
+            background: #fff; 
+            border: 1px solid var(--border); 
+            color: var(--text-main); 
+            border-radius: 8px; 
+            box-sizing: border-box;
+            transition: border-color 0.2s;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+        }
+
+        button { 
+            background: var(--primary); 
+            color: #fff; 
+            border: none; 
+            padding: 14px; 
+            font-weight: 600; 
+            border-radius: 8px; 
+            cursor: pointer; 
+            width: 100%; 
+            transition: background 0.2s;
+        }
+
+        button:hover { background: #1d4ed8; }
+
+        #code-display { 
+            margin-top: 32px; 
+            padding: 20px;
+            background: #f1f5f9;
+            border-radius: 8px;
+            font-size: 2rem; 
+            font-family: monospace;
+            font-weight: 700; 
+            color: var(--text-main); 
+            letter-spacing: 4px; 
+            min-height: 40px;
+            border: 1px dashed var(--border);
+        }
+
+        .footer {
+            margin-top: 24px;
+            font-size: 0.75rem;
+            color: var(--text-muted);
+        }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>VXR-MD Mini Bot</h1>
-        <p>CONNECT 100% FREE</p>
-        <hr style="border: 0.5px solid #333">
-        <p style="margin-top: 20px;">ENTER WHATSAPP NUMBER</p>
+        <h1>VXR-MD Enterprise</h1>
+        <p>Automated Node Deployment System</p>
+        
+        <label for="phone">Phone Number (International Format)</label>
         <input type="text" id="phone" placeholder="e.g. 27612345678">
-        <button onclick="getPair()">GENERATE PAIR CODE</button>
-        <div id="code-display">_ _ _ _ _ _ _ _</div>
+        
+        <button onclick="getPair()">Generate Secure Code</button>
+        
+        <div id="code-display">---- ----</div>
+        
+        <div class="footer">
+            &copy; 2026 VXR Systems. All rights reserved.
+        </div>
     </div>
+
     <script>
         async function getPair() {
             const num = document.getElementById('phone').value;
             const display = document.getElementById('code-display');
-            if(!num) return alert("Enter your number!");
-            display.innerText = "WAITING...";
+            if(!num) return alert("Validation Error: Phone number required.");
+            
+            display.innerText = "AUTHENTICATING...";
             try {
                 const response = await fetch(`/pair?number=${num}`);
                 const data = await response.json();
-                display.innerText = data.code || "RETRY";
+                display.innerText = data.code || "REQUEST FAILED";
             } catch (err) {
-                display.innerText = "ERROR";
+                display.innerText = "SERVER ERROR";
             }
         }
     </script>
 </body>
 </html>
-

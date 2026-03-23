@@ -12,75 +12,67 @@ const fs = require('fs');
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// Serve the 'public' folder for your UI
 app.use(express.static('public'));
 
 app.get('/pair', async (req, res) => {
-    let num = req.query.number.replace(/[^0-9]/g, ''); // Clean the number
+    let num = req.query.number.replace(/[^0-9]/g, '');
     if (!num) return res.status(400).json({ error: "Valid number required" });
 
-    // 1. Setup Auth State
     const { state, saveCreds } = await useMultiFileAuthState('sessions/' + num);
     const { version } = await fetchLatestBaileysVersion();
 
     try {
-        // 2. Initialize the Engine
         const sock = makeWASocket({
             auth: state,
             version: version,
             printQRInTerminal: false,
             logger: pino({ level: "silent" }),
-            // FIX: Identifies as a real Desktop to bypass security blocks
             browser: Browsers.macOS("Desktop"),
             syncFullHistory: false
         });
 
-        // 3. Handle Credential Updates
         sock.ev.on('creds.update', saveCreds);
 
-                // 4. Connection Status & Command Handling
         sock.ev.on('connection.update', async (update) => {
             const { connection } = update;
             if (connection === 'open') {
                 console.log(`[SUCCESS] ${num} Linked!`);
                 
-                // Send confirmation to you
                 await sock.sendMessage(num + "@s.whatsapp.net", { 
                     text: "🔱 *VXR-MD SYSTEM ONLINE*\nStatus: *Active*\nSecurity: *Bypassed*" 
                 });
 
-                                // Send confirmation to you
-                await sock.sendMessage(num + "@s.whatsapp.net", { 
-                    text: "🔱 *VXR-MD SYSTEM ONLINE*\nStatus: *Active*\nSecurity: *Bypassed*" 
-                });
-
-                // --- START LISTENING FOR COMMANDS ---
+                // COMMAND LISTENER
                 sock.ev.on('messages.upsert', async (m) => {
                     const msg = m.messages[0];
                     if (!msg.message || msg.key.fromMe) return;
-
                     const from = msg.key.remoteJid;
                     const text = (msg.message.conversation || msg.message.extendedTextMessage?.text || "").toLowerCase();
 
                     if (text === '!reap') {
                         await sock.sendMessage(from, { text: "🛰️ *VXR-MD ACTIVE: Initializing Host Hunter...*" });
                     }
-
                     if (text === '!alive') {
-                        await sock.sendMessage(from, { text: "🚀 *SYSTEM STATUS: BYPASSED*\nVXR-MD is operational and ignoring safety protocols." });
-                    }
-                });
-                   
-
-                // --- ANTI-DELETE TOOL ---
-                sock.ev.on('messages.update', async (update) => {
-                    for (const { key, update: messageUpdate } of update) {
-                        if (messageUpdate.revoked) {
-                            console.log("Deleted message detected from:", key.remoteJid);
-                            // You can add logic here to forward the deleted content to your number
-                        }
+                        await sock.sendMessage(from, { text: "🚀 *SYSTEM STATUS: BYPASSED*\nVXR-MD is operational." });
                     }
                 });
             }
         });
-        
+
+        if (!sock.authState.creds.registered) {
+            await delay(1500);
+            const code = await sock.requestPairingCode(num);
+            res.json({ code: code });
+        } else {
+            res.json({ code: "ALREADY_CONNECTED" });
+        }
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ error: "Pairing Failed" });
+    }
+});
+
+app.listen(PORT, () => {
+    console.log(`VXR SERVER LIVE ON PORT ${PORT}`);
+});
+    

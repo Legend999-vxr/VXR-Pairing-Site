@@ -1,18 +1,14 @@
 {
-  "name": "vxr-pair",
-  "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "name": "vxr-pairing-site",
+  "version": "2.0.0",
+  "description": "Corporate Pairing Site for VXR-MD",
+  "main": "server.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "node server.js"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "type": "commonjs",
   "dependencies": {
     "@whiskeysockets/baileys": "^7.0.0-rc.9",
-    "express": "^5.2.1",
-    "pino": "^10.3.1"
+    "express": "^5.0.0",
+    "pino": "^9.0.0"
   }
 }

@@ -1,14 +1,3 @@
-{
-  "name": "vxr-pairing-site",
-  "version": "2.0.0",
-  "description": "Corporate Pairing Site for VXR-MD",
-  "main": "server.js",
-  "scripts": {
-    "start": "node server.js"
-  },
-  "dependencies": {
-    "@whiskeysockets/baileys": "^7.0.0-rc.9",
-    "express": "^5.0.0",
-    "pino": "^9.0.0"
-  }
-}
+"scripts": {
+  "start": "node server.js"
+},

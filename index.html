@@ -3,147 +3,36 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>VXR-MD Enterprise | Pairing Service</title>
+    <title>VXR-MD Enterprise | Pairing</title>
     <style>
-        /* Corporate Color Palette & Reset */
-        :root {
-            --primary: #2563eb; /* Professional Blue */
-            --bg: #f8fafc;
-            --card-bg: #ffffff;
-            --text-main: #1e293b;
-            --text-muted: #64748b;
-            --border: #e2e8f0;
-        }
-
-        body { 
-            background: var(--bg); 
-            color: var(--text-main); 
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; 
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            height: 100vh;
-            margin: 0;
-            padding: 20px;
-        }
-
-        .container { 
-            background: var(--card-bg);
-            border: 1px solid var(--border);
-            border-radius: 12px;
-            padding: 40px;
-            max-width: 450px;
-            width: 100%;
-            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
-            text-align: center;
-        }
-
-        h1 { 
-            font-size: 1.5rem; 
-            font-weight: 700; 
-            margin-bottom: 8px;
-            color: var(--primary);
-        }
-
-        p { 
-            font-size: 0.9rem; 
-            color: var(--text-muted); 
-            margin-bottom: 24px;
-        }
-
-        label {
-            display: block;
-            text-align: left;
-            font-size: 0.85rem;
-            font-weight: 600;
-            margin-bottom: 8px;
-            color: var(--text-main);
-        }
-
-        input { 
-            width: 100%; 
-            padding: 12px; 
-            margin-bottom: 20px; 
-            background: #fff; 
-            border: 1px solid var(--border); 
-            color: var(--text-main); 
-            border-radius: 8px; 
-            box-sizing: border-box;
-            transition: border-color 0.2s;
-        }
-
-        input:focus {
-            outline: none;
-            border-color: var(--primary);
-            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
-        }
-
-        button { 
-            background: var(--primary); 
-            color: #fff; 
-            border: none; 
-            padding: 14px; 
-            font-weight: 600; 
-            border-radius: 8px; 
-            cursor: pointer; 
-            width: 100%; 
-            transition: background 0.2s;
-        }
-
-        button:hover { background: #1d4ed8; }
-
-        #code-display { 
-            margin-top: 32px; 
-            padding: 20px;
-            background: #f1f5f9;
-            border-radius: 8px;
-            font-size: 2rem; 
-            font-family: monospace;
-            font-weight: 700; 
-            color: var(--text-main); 
-            letter-spacing: 4px; 
-            min-height: 40px;
-            border: 1px dashed var(--border);
-        }
-
-        .footer {
-            margin-top: 24px;
-            font-size: 0.75rem;
-            color: var(--text-muted);
-        }
+        :root { --primary: #2563eb; --bg: #f8fafc; --text: #1e293b; }
+        body { background: var(--bg); color: var(--text); font-family: sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
+        .container { background: #fff; padding: 40px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); width: 100%; max-width: 400px; text-align: center; border: 1px solid #e2e8f0; }
+        h1 { color: var(--primary); font-size: 1.5rem; margin-bottom: 10px; }
+        input { width: 100%; padding: 12px; margin: 20px 0; border: 1px solid #cbd5e1; border-radius: 8px; box-sizing: border-box; }
+        button { background: var(--primary); color: white; border: none; padding: 14px; width: 100%; border-radius: 8px; font-weight: bold; cursor: pointer; }
+        #code-display { margin-top: 30px; padding: 15px; background: #f1f5f9; border-radius: 8px; font-size: 1.8rem; font-family: monospace; font-weight: bold; letter-spacing: 5px; border: 1px dashed #cbd5e1; }
     </style>
 </head>
 <body>
     <div class="container">
         <h1>VXR-MD Enterprise</h1>
-        <p>Automated Node Deployment System</p>
-        
-        <label for="phone">Phone Number (International Format)</label>
-        <input type="text" id="phone" placeholder="e.g. 27612345678">
-        
-        <button onclick="getPair()">Generate Secure Code</button>
-        
+        <p>Secure Node Pairing System</p>
+        <input type="text" id="phone" placeholder="27612345678">
+        <button onclick="getPair()">GENERATE SECURE CODE</button>
         <div id="code-display">---- ----</div>
-        
-        <div class="footer">
-            &copy; 2026 VXR Systems. All rights reserved.
-        </div>
     </div>
-
     <script>
         async function getPair() {
             const num = document.getElementById('phone').value;
             const display = document.getElementById('code-display');
-            if(!num) return alert("Validation Error: Phone number required.");
-            
-            display.innerText = "AUTHENTICATING...";
+            if(!num) return alert("Number required");
+            display.innerText = "LINKING...";
             try {
-                const response = await fetch(`/pair?number=${num}`);
-                const data = await response.json();
-                display.innerText = data.code || "REQUEST FAILED";
-            } catch (err) {
-                display.innerText = "SERVER ERROR";
-            }
+                const res = await fetch(`/pair?number=${num}`);
+                const data = await res.json();
+                display.innerText = data.code || "FAILED";
+            } catch { display.innerText = "ERROR"; }
         }
     </script>
 </body>
